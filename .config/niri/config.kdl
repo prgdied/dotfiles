@@ -66,7 +66,7 @@ input {
 
     // Focus windows and outputs automatically when moving the mouse into them.
     // Setting max-scroll-amount="0%" makes it work only on windows already fully on screen.
-    // focus-follows-mouse max-scroll-amount="0%"
+    focus-follows-mouse max-scroll-amount="0%"
 }
 
 // You can configure outputs by their name, which you can find
@@ -75,7 +75,7 @@ input {
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
-/-output "eDP-1" {
+output "eDP-1" {
     // Uncomment this line to disable this output.
     // off
 
@@ -85,7 +85,7 @@ input {
     // for the resolution.
     // If the mode is omitted altogether or is invalid, niri will pick one automatically.
     // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "1920x1080@120.030"
+    mode "1920x1080@120"
 
     // You can use integer or fractional scale, for example use 1.5 for 150% scale.
     scale 1
@@ -271,8 +271,6 @@ layout {
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
 
-spawn-at-startup "waypaper --restore"
-
 spawn-at-startup "hyprlock"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
@@ -288,7 +286,7 @@ hotkey-overlay {
 // Additionally, clients will be informed that they are tiled, removing some client-side rounded corners.
 // This option will also fix border/focus ring drawing behind some semitransparent windows.
 // After enabling or disabling this, you need to restart the apps for this to take effect.
-// prefer-no-csd
+prefer-no-csd
 
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
@@ -351,6 +349,20 @@ window-rule {
     clip-to-geometry true
 }
 
+window-rule {
+		match app-id=r#"waypaper$"#
+		open-floating true
+}
+
+window-rule {
+    match app-id="kitty-fastfetch"
+    open-floating true
+    min-width 1200
+    min-height 600
+    max-width 1200
+    max-height 600
+}
+
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
@@ -372,6 +384,9 @@ binds {
     Super+Alt+L hotkey-overlay-title="Lock the Screen: hyprlock" { spawn "hyprlock"; }
 	Mod+E hotkey-overlay-title="Open Filebrowser" { spawn "dolphin"; }
 	Mod+W hotkey-overlay-title="Open Browser" { spawn "firefox"; }
+
+	// Custom Keybinds
+	Mod+T { spawn "waypaper"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
