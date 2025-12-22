@@ -236,6 +236,52 @@ animation-duration: 1s;
 animation-timing-function: steps(15);
 } /* }}} */
 
+/* Niri Workspaces */ /* {{{ */
+/* Default workspace settings */
+#waybar.main #workspaces.niri button {
+  color: @color1;
+  background: transparent;
+  border: none;  /* Remove all borders by default */
+  border-bottom: 2px solid transparent;  /* Add transparent bottom border */
+  padding-left: 2pt;
+  padding-right: 2pt;
+  border-radius: 0;  /* Remove border radius for cleaner underline */
+  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-left: 3px;
+  margin-right: 3px;
+  transition: all 0.25s ease;
+}
+
+/* Active workspace (visible on any monitor) */
+#waybar.main #workspaces.niri button.active {
+  color: @color1;
+}
+
+/* Focused workspace (currently focused on this monitor) */
+#waybar.main #workspaces.niri button.focused {
+  color: @color5;
+  border-bottom: 6px solid @caution;  /* Underline instead of circle */
+}
+
+/* Style when cursor is on the button */
+#waybar.main #workspaces.niri button:hover {
+  color: @color15;
+  border-bottom: 6px solid @color15;  /* Optional: underline on hover too */
+}
+
+/* Urgent workspace */
+#waybar.main #workspaces.niri button.urgent {
+  border-bottom: 2px solid transparent;
+  color: @color1;
+  transition: all 0s ease;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-name: blink-modifier-text;
+  animation-duration: 1s;
+  animation-timing-function: steps(15);
+}
+
 /* Hyprland Workspaces */ /* {{{ */
 /* Default workspace settings */
 #waybar.main #workspaces button {

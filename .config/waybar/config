@@ -13,11 +13,13 @@
       "group/tray",
       "custom/spacer3",
       "custom/spacer2",
+	  "niri/workspaces",
       "hyprland/workspaces",
 	  "sway/workspaces",
 	  "sway/mode",
       "custom/spacer2",
       "custom/spacer3",
+	  "niri/window",
       "hyprland/submap",
       "hyprland/window",
 	  "sway/window"
@@ -61,14 +63,14 @@
       "interval": 1800,
       "exec": "wttrbar --nerd --fahrenheit --location 47403",
       "return-type": "json",
-      "on-click": "exec /home/payton/.config/astroterm/Astroterm.sh"
+      "on-click": "exec /home/payton/Scripts/Astroterm.sh"
     },
 
     "custom/cava": {
       "exec": "~/.config/waybar/bash/cava.sh",
       "format": "{text}",
 	  "font-family": "JetBrains Mono Nerd Font",
-      "on-click": "pwvucontrol",
+      "on-click": "eww open --toggle audio_panel",
       "on-scroll-up": "playerctl next",
       "on-scroll-down": "playerctl previous",
       "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
@@ -125,7 +127,7 @@
 
     "custom/gpu-usage": {
       "format": "<span size='x-large' rise='-2500'>󰢮</span> {text}",
-      "exec": "gpu-usage-waybar --text-no-memory",
+      "exec": "gpu-usage-waybar",
       "return-type": "json",
       "on-click": "steam",
     },
@@ -215,7 +217,7 @@
       "tooltip": "{}",
       "tooltip-format-wifi": "{ifname}\n{essid}\n{signalStrength}% \n{frequency} GHz\n󰇚 {bandwidthDownBits}\n󰕒 {bandwidthUpBits}",
       "tooltip-format-ethernet": "{ifname}\n󰇚 {bandwidthDownBits} \n󰕒 {bandwidthUpBits}",
-      "on-click": "nm-connection-editor",
+      "on-click": "eww open --toggle network_panel",
 	  "on-click-right": "blueman-applet",
       "format-icons": ["󰤫", "󰤟", "󰤢", "󰤥", "󰤨"],
       "states": {
@@ -238,6 +240,23 @@
       "format-wifi": "󰇚 {bandwidthDownBits}",
       "format-ethernet": "󰇚 {bandwidthDownBits}",
       "min-length": 11
+    },
+
+    "niri/workspaces": {
+      "format": "{index}",
+      "format-icons": {
+        "magic": " ",
+        "10": "󰊴 ",
+        "20": "󰊴 ",
+      }
+    },
+
+    "niri/window": {
+      "format": "{title}",
+      "max-length": 48,
+      "icon": true,
+      "icon-size": 18,
+      "separate-outputs": false
     },
 
     "hyprland/submap": {
