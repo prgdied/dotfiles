@@ -1,5 +1,5 @@
 Linux Config:
-I use this setup on both my home desktop and my work laptop. Everything here should work either on a laptop or pc with multi monitors.
+I use this setup on both my home desktop and my work laptop. Everything here should work either on a laptop or pc with multi monitors. You may have to configure monitor settings for best results.
 
 Primary programs / applications
 1. Waybar
@@ -8,12 +8,18 @@ Primary programs / applications
 4. Waypaper
 5. NVIM
 6. Kitty
+7. Niri <3
+8. swaybg for niri overview backdrop
+9. Dolphin is goated
+10. xwayland-sattelite
+11. Swaync
+12. 
 
-Should work well with either Sway or Hyprland. Waybar has been configured for both.
+Should work well with either Sway or Hyprland. Waybar has been configured for both. Started using Niri and this has taken priority.
 
 Trying to keep track of other important packages:
 1. Grim
-2. Autotiling
+2. Autotiling for sway
 3. hyprlock
 4. cliphist
 5. gpu-usage-waybar
