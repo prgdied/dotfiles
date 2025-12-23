@@ -1,6 +1,16 @@
 #!/bin/bash
 wal -i "$1"
 
+# Read pywal colors
+source ~/.cache/wal/colors.sh
+
+# Update Niri config with pywal colors
+# Using sed to replace the focus-ring color in-place
+sed -i "s/active-color \".*\" \/\/ pywal/active-color \"$color4\" \/\/ pywal/" ~/.config/niri/config.kdl
+
+# Reload Niri config to apply new colors
+niri msg action reload-config
+
 swaymsg reload
 
 # Kill waybar and common waybar-related processes
