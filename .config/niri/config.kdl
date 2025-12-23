@@ -75,7 +75,7 @@ input {
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
-// output "eDP-1" {
+output "eDP-1" {
     // Uncomment this line to disable this output.
     // off
 
@@ -85,10 +85,10 @@ input {
     // for the resolution.
     // If the mode is omitted altogether or is invalid, niri will pick one automatically.
     // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    // mode "1920x1080@120"
+    mode "1920x1080@120"
 
     // You can use integer or fractional scale, for example use 1.5 for 150% scale.
-    // scale 1
+    scale 1
 
     // Transform allows to rotate the output counter-clockwise, valid values are:
     // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
@@ -104,21 +104,6 @@ input {
     // If the position is unset or results in an overlap, the output is instead placed
     // automatically.
     // position x=1280 y=0
-// }
-
-output "DP-1" {
-    mode "2560x1440@164.999"
-    position x=1920 y=0
-}
-
-output "DP-2" {
-    mode "1920x1080@239.760"
-    position x=0 y=0
-}
-
-output "HDMI-A-1" {
-    mode "1920x1080@60"
-    position x=-1920 y=0
 }
 
 // Settings that influence how windows are positioned and sized.
@@ -183,7 +168,7 @@ layout {
         // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
 
         // Color of the ring on the active monitor.
-        active-color "#7fc8ff"
+        active-color "#4F778E" // pywal
 
         // Color of the ring on inactive monitors.
         //
@@ -289,10 +274,6 @@ spawn-at-startup "waybar"
 spawn-at-startup "hyprlock"
 
 spawn-at-startup "waypaper" "--restore"
-
-spawn-at-startup "~/Scripts/niri-backdrop.sh"
-
-spawn-at-startup "sunshine"
 
 spawn-at-startup "swaync"
 
