@@ -8,3 +8,8 @@ Type=simple
 ExecStartPre=/usr/bin/sleep 2
 ExecStart=/usr/bin/swaybg -o '*' -i /home/payton/Pictures/Wallpapers/blackandwhiteearth.jpg
 Restart=on-failure
+
+; Run these lines
+; systemctl --user daemon-reload
+; systemctl --user restart swaybg.service
+; systemctl --user status swaybg.service
