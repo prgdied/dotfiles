@@ -16,3 +16,6 @@ while pgrep waybar > /dev/null || pgrep cava > /dev/null; do
 done
 
 waybar &
+
+# This line fixes niri overview backdrop
+systemctl --user restart swaybg.service
