@@ -1,0 +1,20 @@
+# ~/.config/starship.toml
+
+format = "\\[$username@$hostname $directory\\]$character"
+
+[username]
+show_always = true
+format = "$user"
+
+[hostname]
+ssh_only = false
+format = "$hostname "
+
+[directory]
+truncation_length = 3
+truncate_to_repo = false
+format = "$path"
+
+[character]
+success_symbol = "[\\$](green)"
+error_symbol = "[\\$](red)"
