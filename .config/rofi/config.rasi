@@ -1,14 +1,14 @@
 /*****----- Configuration -----*****/
 configuration {
-modi:                       "drun,clipboard:/home/payton/Scripts/RofiClipboard.sh,notes:/home/payton/Scripts/RofiNotes.sh,run,filebrowser";
+modi:                       "drun,clipboard:~/.config/rofi/scripts/RofiClipboard.sh,notes:~/.config/rofi/scripts/RofiNotes.sh,run,filebrowser,scripts:~/.config/rofi/scripts/rofi-scripts.sh";
     show-icons:                 true;
-    display-drun:               " Apps";
+    display-drun:               "󰀻 Apps";
     display-clipboard:          " Clip";
     display-run:                " Run";
     display-filebrowser:        " Files";
-    display-notes:				" Notes";
-  /*  display-window:             " Tabs";   */
-  /*   display-ssh:                " ssh" ;   */
+    display-notes:				"󰠮 Notes";
+  /*  display-window:           " Tabs";   */
+    display-scripts:            "󰯂 Scripts" ;
 	drun-display-format:        "{name}";
 	window-format:              "{w} · {c} · {t}";
 }

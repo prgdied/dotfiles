@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+
+# ── Config ────────────────────────────────────────────────────────────────────
+WALL_DIR="$HOME/Pictures/Wallpapers"
+THEME="$HOME/.config/rofi/themes/wallpaper-switcher.rasi"
+THUMB_DIR="$HOME/.cache/wallpaper-thumbs"
+THUMB_SIZE="480x270"
+
+BACKEND="${WALLPAPER_BACKEND:-awww}"
+MODE="${1:-shallow}"
+
+# ── Setup ─────────────────────────────────────────────────────────────────────
+mkdir -p "$THUMB_DIR"
+
+# ── Wait for awww daemon ───────────────────────────────────────────────────────
+wait_for_awww() {
+    local tries=0
+    while ! awww query &>/dev/null; do
+        sleep 0.5
+        tries=$((tries + 1))
+        if [ $tries -ge 20 ]; then
+            echo "select-wallpaper: timed out waiting for awww daemon" >&2
+            return 1
+        fi
+    done
+    return 0
+}
+
+# ── Thumbnail generation ───────────────────────────────────────────────────────
+get_thumb() {
+    local src="$1"
+    local hash
+    hash=$(echo "$src" | md5sum | cut -d' ' -f1)
+    local thumb="$THUMB_DIR/${hash}.png"
+
+    if [ ! -f "$thumb" ]; then
+        magick "${src}[0]" \
+            -resize "${THUMB_SIZE}^" \
+            -gravity Center \
+            -extent "$THUMB_SIZE" \
+            "$thumb" 2>/dev/null
+    fi
+
+    echo "$thumb"
+}
+
+# ── Wallpaper listing ──────────────────────────────────────────────────────────
+list_wallpapers() {
+    local find_args=("$WALL_DIR")
+
+    if [ "$MODE" = "shallow" ]; then
+        find_args+=(-maxdepth 1)
+    fi
+
+    find "${find_args[@]}" -type f \( \
+        -iname "*.jpg" \
+        -o -iname "*.jpeg" \
+        -o -iname "*.png" \
+        -o -iname "*.webp" \
+        -o -iname "*.gif" \
+    \) | sort | while read -r path; do
+        local thumb
+        thumb=$(get_thumb "$path")
+        printf '%s\0icon\x1f%s\n' "$path" "$thumb"
+    done
+}
+
+# ── Recache helper ─────────────────────────────────────────────────────────────
+recache() {
+    rm -rf "$THUMB_DIR"
+    mkdir -p "$THUMB_DIR"
+    notify-send "Wallpaper Switcher" "Cache cleared — reopen to reload." 2>/dev/null || true
+}
+
+# ── Apply wallpaper ────────────────────────────────────────────────────────────
+apply_wallpaper() {
+    local path="$1"
+    case "$BACKEND" in
+        awww)
+            awww img "$path" \
+                --transition-type wipe \
+                --transition-fps 60 \
+                --transition-duration 0.9
+            ;;
+        swww)
+            swww img "$path" \
+                --transition-type wipe \
+                --transition-fps 60 \
+                --transition-duration 0.9
+            ;;
+        swaybg)    pkill swaybg; swaybg -i "$path" -m fill & ;;
+        feh)       feh --bg-fill "$path" ;;
+        hyprpaper) hyprctl hyprpaper wallpaper ",$path" ;;
+        mpvpaper)  pkill mpvpaper; mpvpaper -o "no-audio loop" '*' "$path" & ;;
+        wallutils) setwallpaper "$path" ;;
+        *)         awww img "$path" --transition-type wipe --transition-fps 60 ;;
+    esac
+}
+
+# ── Reload pywal-dependent apps ───────────────────────────────────────────────
+reload_theme() {
+    niri msg action load-config-file
+}
+
+# ── Restore last wallpaper on login ───────────────────────────────────────────
+if [ "$1" = "restore" ]; then
+    last="$HOME/.cache/wal/wal"
+    if [ -f "$last" ]; then
+        path=$(cat "$last")
+        if [ -f "$path" ]; then
+            if [ "$BACKEND" = "awww" ] || [ "$BACKEND" = "swww" ]; then
+                wait_for_awww || exit 1
+            fi
+
+            case "$BACKEND" in
+                awww)      awww img "$path" --transition-type none ;;
+                swww)      swww img "$path" --transition-type none ;;
+                swaybg)    pkill swaybg; swaybg -i "$path" -m fill & ;;
+                feh)       feh --bg-fill "$path" ;;
+                hyprpaper) hyprctl hyprpaper wallpaper ",$path" ;;
+                mpvpaper)  pkill mpvpaper; mpvpaper -o "no-audio loop" '*' "$path" & ;;
+                wallutils) setwallpaper "$path" ;;
+                *)         awww img "$path" --transition-type none ;;
+            esac
+
+            wal -i "$path" -n
+            reload_theme
+        fi
+    fi
+    exit 0
+fi
+
+# ── Random wallpaper (always shallow — subfolders never included) ──────────────
+if [ "$1" = "random" ]; then
+    random_pick=$(find "$WALL_DIR" -maxdepth 1 -type f \( \
+        -iname "*.jpg" \
+        -o -iname "*.jpeg" \
+        -o -iname "*.png" \
+        -o -iname "*.webp" \
+        -o -iname "*.gif" \
+    \) | shuf -n 1)
+
+    if [ -f "$random_pick" ]; then
+        apply_wallpaper "$random_pick"
+        wal -i "$random_pick"
+        reload_theme
+    fi
+    exit 0
+fi
+
+# ── Rofi keybindings ───────────────────────────────────────────────────────────
+# Alt+s  → toggle shallow/deep subfolder mode (exit code 10)
+# Alt+r  → wipe thumbnail cache and relaunch (exit code 11)
+
+ROFI_OPTS=(
+    -dmenu
+    -theme "$THEME"
+    -p ""
+    -kb-custom-1 "alt+s"
+    -kb-custom-2 "alt+r"
+)
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+choice=$(list_wallpapers | rofi "${ROFI_OPTS[@]}")
+exit_code=$?
+
+case $exit_code in
+    0)
+        if [ -f "$choice" ]; then
+            apply_wallpaper "$choice"
+            wal -i "$choice"
+            reload_theme
+        fi
+        ;;
+    10)
+        if [ "$MODE" = "shallow" ]; then
+            exec bash "$0" deep
+        else
+            exec bash "$0" shallow
+        fi
+        ;;
+    11)
+        recache
+        exec bash "$0" "$MODE"
+        ;;
+    *)
+        exit 0
+        ;;
+esac
