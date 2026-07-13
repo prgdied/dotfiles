@@ -1,0 +1,42 @@
+#!/bin/bash
+set -euo pipefail
+
+STATE_DIR="$HOME/.cache/recording"
+OUT_DIR="$HOME/Videos/Recordings"
+mkdir -p "$STATE_DIR" "$OUT_DIR"
+
+# Don't stack a second recording on top of an active one
+if [[ -f "$STATE_DIR/pid" ]] && kill -0 "$(cat "$STATE_DIR/pid")" 2>/dev/null; then
+    notify-send "Recording" "Already recording — stop it first"
+    exit 1
+fi
+
+# -o restricts slurp to whole-output selection: click a monitor, get its geometry
+GEOM=$(slurp -o)
+if [[ -z "$GEOM" ]]; then
+    exit 0  # user hit Escape / cancelled
+fi
+
+# ── Build a combined audio sink: mic + system audio ─────────────────────────
+# wf-recorder --audio only grabs one source. To get mic + system audio in one
+# track, loop both into a virtual null-sink and record its monitor instead.
+SINK_MOD=$(pactl load-module module-null-sink sink_name=recording_combined \
+    sink_properties=device.description=RecordingCombined)
+MIC_LOOP=$(pactl load-module module-loopback source=@DEFAULT_SOURCE@ sink=recording_combined)
+SYS_LOOP=$(pactl load-module module-loopback source=@DEFAULT_SINK@.monitor sink=recording_combined)
+ 
+echo "$SINK_MOD" > "$STATE_DIR/audio_sink_mod"
+echo "$MIC_LOOP"  > "$STATE_DIR/audio_mic_mod"
+echo "$SYS_LOOP"  > "$STATE_DIR/audio_sys_mod"
+ 
+TIMESTAMP=$(date +%d-%m-%y)
+OUTFILE="$OUT_DIR/$TIMESTAMP.mp4"
+ 
+wf-recorder -g "$GEOM" --audio=recording_combined.monitor -f "$OUTFILE" &
+PID=$!
+
+echo "$PID" > "$STATE_DIR/pid"
+echo "$OUTFILE" > "$STATE_DIR/outfile"
+echo "false" > "$STATE_DIR/paused"
+
+notify-send "Recording started" "$OUTFILE"
