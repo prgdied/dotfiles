@@ -5,7 +5,9 @@ Item {
     id: root
     implicitWidth:  200
     implicitHeight: 26
-    property string _bars: ""
+	property string _bars: ""
+
+	signal toggleMediaCenter()
 
     Timer {
         interval: 800; running: true; repeat: false
@@ -56,12 +58,11 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: function(mouse) {
             if (mouse.button === Qt.LeftButton)
-                // Left click: pwvucontrol
-                Qt.createQmlObject('import Quickshell.Io; Process{command:["pwvucontrol"];running:true}', root)
+                root.toggleMediaCenter()
             else if (mouse.button === Qt.RightButton)
                 Qt.createQmlObject('import Quickshell.Io; Process{command:["pactl","set-source-mute","@DEFAULT_SOURCE@","toggle"];running:true}', root)
             else if (mouse.button === Qt.MiddleButton)
-                Qt.createQmlObject('import Quickshell.Io; Process{command:["kitty","cava"];running:true}', root)
+                Qt.createQmlObject('import Quickshell.Io; Process{command:["foot","cava"];running:true}', root)
         }
         onWheel: function(wheel) {
             if (wheel.angleDelta.y > 0)
